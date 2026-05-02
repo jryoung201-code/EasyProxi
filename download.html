@@ -47,7 +47,23 @@
     </div>
   </div>
 
-  <script>
+  <div class="overlay-panel" id="overlayPanel">
+    <div class="overlay-header">
+      <span>Control Panel</span>
+      <span class="drag-hint">drag</span>
+    </div>
+    <div class="overlay-content">
+      <div class="stat-row"><span>Data Usage</span><strong id="dataUsage">0 MB / 500 MB</strong></div>
+      <div class="stat-row"><span>Requests Served</span><strong id="requestsServed">0</strong></div>
+      <div class="stat-row"><span>Uptime</span><strong id="uptime">00:00:00</strong></div>
+      <div class="stat-row"><span>API Key</span><strong id="apiKey">GENERATING...</strong></div>
+    </div>
+    <div class="overlay-footer">
+      <button type="button" id="resetButton">Reset Session</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
     const platformButtons = document.querySelectorAll('.platform-btn');
 
     platformButtons.forEach(btn => {
