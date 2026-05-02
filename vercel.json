@@ -9,6 +9,14 @@
       "destination": "/donate.html"
     },
     {
+      "source": "/login",
+      "destination": "/login.html"
+    },
+    {
+      "source": "/register",
+      "destination": "/register.html"
+    },
+    {
       "source": "/browser",
       "destination": "/index.html"
     },
