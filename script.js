@@ -1,5 +1,9 @@
-const proxyForm = document.getElementById('proxyForm');
-const proxyUrlInput = document.getElementById('proxyUrl');
+const urlForm = document.getElementById('urlForm');
+const urlInput = document.getElementById('urlInput');
+const browserFrame = document.getElementById('browserFrame');
+const backBtn = document.getElementById('backBtn');
+const forwardBtn = document.getElementById('forwardBtn');
+const reloadBtn = document.getElementById('reloadBtn');
 const dataUsageEl = document.getElementById('dataUsage');
 const requestsServedEl = document.getElementById('requestsServed');
 const uptimeEl = document.getElementById('uptime');
@@ -19,6 +23,9 @@ let stats = {
   dataUsed: 0,
   requests: 0,
 };
+
+let history = [];
+let historyIndex = -1;
 
 function loadStats() {
   const stored = localStorage.getItem(STORAGE_KEY);
@@ -85,6 +92,12 @@ function normalizeUrl(raw) {
   let value = raw.trim();
   if (!value) return '';
 
+  // If it looks like a search term (no dots or protocol), search Google
+  if (!/\./.test(value) && !/^https?:\/\//i.test(value)) {
+    return `https://www.google.com/search?q=${encodeURIComponent(value)}`;
+  }
+
+  // Add https if no protocol
   if (!/^https?:\/\//i.test(value)) {
     value = `https://${value}`;
   }
@@ -92,28 +105,65 @@ function normalizeUrl(raw) {
   return value;
 }
 
-// ✅ VERCEL ROUTE
-proxyForm.addEventListener('submit', (e) => {
+function loadUrl(url) {
+  const normalized = normalizeUrl(url);
+  if (!normalized) return;
+
+  urlInput.value = normalized;
+  browserFrame.src = `/api/proxy?url=${encodeURIComponent(normalized)}`;
+  addFakeUsage(normalized);
+
+  // Add to history
+  history = history.slice(0, historyIndex + 1);
+  history.push(normalized);
+  historyIndex = history.length - 1;
+  updateNavButtons();
+}
+
+function updateNavButtons() {
+  backBtn.disabled = historyIndex <= 0;
+  forwardBtn.disabled = historyIndex >= history.length - 1;
+}
+
+// Form submission
+urlForm.addEventListener('submit', (e) => {
   e.preventDefault();
-
-  const raw = proxyUrlInput.value;
-  const url = normalizeUrl(raw);
-  if (!url) return;
-
-  const encoded = encodeURIComponent(url);
-
-  addFakeUsage(url);
-
-  // 🔥 THIS WORKS WITH VERCEL
-  window.location.href = `/api/proxy?url=${encoded}`;
+  loadUrl(urlInput.value);
 });
 
+// Navigation buttons
+backBtn.addEventListener('click', () => {
+  if (historyIndex > 0) {
+    historyIndex--;
+    loadUrl(history[historyIndex]);
+  }
+});
+
+forwardBtn.addEventListener('click', () => {
+  if (historyIndex < history.length - 1) {
+    historyIndex++;
+    loadUrl(history[historyIndex]);
+  }
+});
+
+reloadBtn.addEventListener('click', () => {
+  if (browserFrame.src) {
+    browserFrame.src = browserFrame.src;
+  }
+});
+
+// Reset button
 resetButton.addEventListener('click', () => {
   stats = { dataUsed: 0, requests: 0 };
   localStorage.removeItem(STORAGE_KEY);
   localStorage.removeItem(API_KEY_KEY);
   apiKeyEl.textContent = 'GENERATING...';
   updateUI();
+  history = [];
+  historyIndex = -1;
+  updateNavButtons();
+  browserFrame.src = '';
+  urlInput.value = '';
 });
 
 // draggable overlay
@@ -148,5 +198,6 @@ overlayPanel.style.position = 'fixed';
 
 loadStats();
 updateUI();
+updateNavButtons();
 updateUptime();
 setInterval(updateUptime, 1000);

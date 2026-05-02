@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/download",
+      "destination": "/download.html"
+    },
+    {
+      "source": "/browser",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/landing.html"
+    }
+  ]
+}

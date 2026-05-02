@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Download EasyProxi Browser</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="download-page">
+    <div class="download-header">
+      <h1>Download EasyProxi Browser</h1>
+      <p>Choose your platform to download the desktop version of EasyProxi Browser</p>
+    </div>
+
+    <div class="download-options">
+      <button class="platform-btn windows-btn" data-platform="windows">
+        <div class="platform-icon">🪟</div>
+        <div class="platform-info">
+          <h3>Windows</h3>
+          <p>Download for Windows 10/11</p>
+        </div>
+      </button>
+
+      <button class="platform-btn mac-btn" data-platform="mac">
+        <div class="platform-icon">🍎</div>
+        <div class="platform-info">
+          <h3>macOS</h3>
+          <p>Download for Mac</p>
+        </div>
+      </button>
+
+      <button class="platform-btn linux-btn" data-platform="linux">
+        <div class="platform-icon">🐧</div>
+        <div class="platform-info">
+          <h3>Linux</h3>
+          <p>Download for Linux</p>
+        </div>
+      </button>
+    </div>
+
+    <div class="back-section">
+      <a href="/" class="back-btn">← Back to Home</a>
+    </div>
+  </div>
+
+  <script>
+    const platformButtons = document.querySelectorAll('.platform-btn');
+
+    platformButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const platform = btn.dataset.platform;
+        alert(`Downloading EasyProxi Browser for ${platform.charAt(0).toUpperCase() + platform.slice(1)}...\n\nNote: This is a simulation. In a real app, this would download the executable file.`);
+      });
+    });
+  </script>
+</body>
+</html>

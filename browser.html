@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EasyProxi Browser</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="browser-container">
+    <div class="browser-toolbar">
+      <div class="nav-buttons">
+        <button id="backBtn" class="nav-btn" aria-label="Back">←</button>
+        <button id="forwardBtn" class="nav-btn" aria-label="Forward">→</button>
+        <button id="reloadBtn" class="nav-btn" aria-label="Reload">↻</button>
+      </div>
+      <form id="urlForm" class="url-form">
+        <input id="urlInput" type="text" placeholder="Enter URL or search term" autocomplete="off" />
+        <button type="submit" class="go-btn">Go</button>
+      </form>
+    </div>
+    <iframe id="browserFrame" src="" frameborder="0"></iframe>
+  </div>
+
+  <div class="overlay-panel" id="overlayPanel">
+    <div class="overlay-header">
+      <span>Control Panel</span>
+      <span class="drag-hint">drag</span>
+    </div>
+    <div class="overlay-content">
+      <div class="stat-row"><span>Data Usage</span><strong id="dataUsage">0 MB / 500 MB</strong></div>
+      <div class="stat-row"><span>Requests Served</span><strong id="requestsServed">0</strong></div>
+      <div class="stat-row"><span>Uptime</span><strong id="uptime">00:00:00</strong></div>
+      <div class="stat-row"><span>API Key</span><strong id="apiKey">GENERATING...</strong></div>
+    </div>
+    <div class="overlay-footer">
+      <button type="button" id="resetButton">Reset Session</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

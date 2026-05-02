@@ -1,0 +1,77 @@
+# EasyProxi Upgrade Notes
+
+## Overview
+Upgraded EasyProxi from a simple landing page with proxy form to a full multi-service web platform with browser UI, proxy system, download page, clean routing, and scalable backend structure.
+
+## Domain Structure
+- easyproxi.online → Main landing page (index.html)
+- browser.easyproxi.online → Frontend browser UI (browser.html)
+- proxy.easyproxi.online → Proxy backend (/api/proxy)
+- server.easyproxi.online → API/backend services (/api/*)
+
+## Frontend Changes
+
+### Landing Page (index.html)
+- Restored original landing page design
+- Updated navigation links to use clean URLs (/download)
+- Maintained dark neon design and overlay panel
+
+### Browser UI (browser.html)
+- New browser-like interface with toolbar
+- URL input bar with search functionality
+- Back/Forward/Reload buttons
+- Iframe loads proxied content via /api/proxy
+- Draggable overlay panel remains visible above iframe
+- Responsive design for desktop/mobile
+
+### URL Handling Improvements
+- Enhanced normalizeUrl function
+- Converts "google.com" to "https://google.com"
+- Searches Google for terms without dots (e.g., "youtube")
+- Supports full URLs
+
+### Download Page (download.html)
+- New page: "Download EasyProxi Browser"
+- Platform buttons: Windows, Mac, Linux
+- Simulates downloads (alerts for demo)
+- Back to Home button
+
+## Backend API (server.easyproxi.online)
+
+### New Endpoints
+- GET /api/status → Returns uptime and status
+- POST /api/usage → Tracks data usage (requires API key)
+- GET /api/user → Returns mock user data (requires API key)
+
+### Proxy System
+- Kept simple /api/proxy endpoint
+- Fetches external pages and returns HTML
+- Basic headers handling
+
+## Routing (vercel.json)
+- /download → /download.html
+- /browser → /browser.html
+- / → /index.html (landing)
+
+## Desktop App (desktop_app.py)
+- Python app using pywebview
+- Loads https://browser.easyproxi.online
+- Window: 1200x800, title "EasyProxi Browser"
+- Build instructions for Windows (.exe), Mac (.app), Linux (binary)
+
+## Code Quality
+- Modular and clean code
+- No duplicate logic
+- Added comments where helpful
+- Maintained existing dark neon design
+- Responsive across devices
+
+## Files Modified/Created
+- Updated: index.html, script.js, style.css
+- Created: browser.html, download.html, vercel.json, api/status.js, api/usage.js, api/user.js, desktop_app.py
+
+## Architecture
+- Scalable structure with separate concerns
+- Clean URL routing without .html extensions
+- API key support for backend services
+- Desktop app for native experience
