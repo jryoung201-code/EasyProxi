@@ -3,6 +3,7 @@ const STORAGE_KEY = 'easyproxi-data';
 const API_KEY_KEY = 'easyproxi-api-key';
 const MAX_DATA_MB = 100;
 const UPTIME_START = Date.now();
+const SERVER_URL = 'https://easyproxi-server.onrender.com';
 
 // Global state
 let stats = {
@@ -70,15 +71,30 @@ function updateUptime() {
     .join(':');
 }
 
-function addFakeUsage(url) {
+async function trackUsage(url) {
   const base = 3.2;
   const extra = Math.min(8, url.length * 0.12);
+  const dataUsed = base + extra;
 
-  stats.dataUsed = Math.min(MAX_DATA_MB, stats.dataUsed + base + extra);
+  stats.dataUsed = Math.min(MAX_DATA_MB, stats.dataUsed + dataUsed);
   stats.requests += 1;
 
   saveStats();
   updateUI();
+
+  // Send usage to server
+  try {
+    await fetch(`${SERVER_URL}/api/usage`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': getOrCreateApiKey(),
+      },
+      body: JSON.stringify({ dataUsed, requests: 1 }),
+    });
+  } catch (err) {
+    console.warn('Could not track usage on server:', err.message);
+  }
 }
 
 function normalizeUrl(raw) {
@@ -169,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
           historyIndex--;
           const url = history[historyIndex];
           urlInput.value = url;
-          browserFrame.src = `/api/proxy?url=${encodeURIComponent(url)}`;
+          browserFrame.src = `${SERVER_URL}/api/proxy?url=${encodeURIComponent(url)}`;
         }
       });
     }
@@ -180,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
           historyIndex++;
           const url = history[historyIndex];
           urlInput.value = url;
-          browserFrame.src = `/api/proxy?url=${encodeURIComponent(url)}`;
+          browserFrame.src = `${SERVER_URL}/api/proxy?url=${encodeURIComponent(url)}`;
         }
       });
     }
@@ -200,8 +216,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!normalized) return;
 
       urlInput.value = normalized;
-      browserFrame.src = `/api/proxy?url=${encodeURIComponent(normalized)}`;
-      addFakeUsage(normalized);
+      browserFrame.src = `${SERVER_URL}/api/proxy?url=${encodeURIComponent(normalized)}`;
+      trackUsage(normalized);
 
       // Add to history
       history = history.slice(0, historyIndex + 1);
@@ -218,8 +234,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!url) return;
 
       const encoded = encodeURIComponent(url);
-      addFakeUsage(url);
-      window.location.href = `/api/proxy?url=${encoded}`;
+      trackUsage(url);
+      window.location.href = `${SERVER_URL}/api/proxy?url=${encoded}`;
     });
   }
 
