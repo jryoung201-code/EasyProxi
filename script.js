@@ -14,12 +14,12 @@ const UPTIME_START = Date.now();
 
 let dragOffset = { x: 0, y: 0 };
 let isDragging = false;
+
 let stats = {
   dataUsed: 0,
   requests: 0,
 };
 
-// Load the user stats from localStorage or initialize defaults.
 function loadStats() {
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored) {
@@ -29,7 +29,7 @@ function loadStats() {
         dataUsed: parsed.dataUsed || 0,
         requests: parsed.requests || 0,
       };
-    } catch (error) {
+    } catch {
       stats = { dataUsed: 0, requests: 0 };
     }
   }
@@ -39,20 +39,18 @@ function saveStats() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
 }
 
-// Generate and persist a simple mock API key.
 function getOrCreateApiKey() {
   let key = localStorage.getItem(API_KEY_KEY);
   if (!key) {
-    const randomSection = () => Math.random().toString(36).substring(2, 8).toUpperCase();
-    key = `EPX-${randomSection()}-${randomSection()}-${randomSection()}`;
+    const rand = () => Math.random().toString(36).substring(2, 8).toUpperCase();
+    key = `EPX-${rand()}-${rand()}-${rand()}`;
     localStorage.setItem(API_KEY_KEY, key);
   }
   return key;
 }
 
 function formatDataUsage() {
-  const used = stats.dataUsed.toFixed(1);
-  return `${used} MB / ${MAX_DATA_MB} MB`;
+  return `${stats.dataUsed.toFixed(1)} MB / ${MAX_DATA_MB} MB`;
 }
 
 function updateUI() {
@@ -63,43 +61,51 @@ function updateUI() {
 
 function updateUptime() {
   const elapsed = Date.now() - UPTIME_START;
-  const hours = Math.floor(elapsed / 3600000);
-  const minutes = Math.floor((elapsed % 3600000) / 60000);
-  const seconds = Math.floor((elapsed % 60000) / 1000);
-  uptimeEl.textContent = [hours, minutes, seconds]
-    .map((value) => value.toString().padStart(2, '0'))
+  const h = Math.floor(elapsed / 3600000);
+  const m = Math.floor((elapsed % 3600000) / 60000);
+  const s = Math.floor((elapsed % 60000) / 1000);
+
+  uptimeEl.textContent = [h, m, s]
+    .map(v => v.toString().padStart(2, '0'))
     .join(':');
 }
 
 function addFakeUsage(url) {
-  const baseUsage = 3.2;
-  const extraUsage = Math.min(8, url.length * 0.12);
-  stats.dataUsed = Math.min(MAX_DATA_MB, stats.dataUsed + baseUsage + extraUsage);
+  const base = 3.2;
+  const extra = Math.min(8, url.length * 0.12);
+
+  stats.dataUsed = Math.min(MAX_DATA_MB, stats.dataUsed + base + extra);
   stats.requests += 1;
+
   saveStats();
   updateUI();
 }
 
-function normalizeUrl(rawValue) {
-  let value = rawValue.trim();
+function normalizeUrl(raw) {
+  let value = raw.trim();
   if (!value) return '';
+
   if (!/^https?:\/\//i.test(value)) {
     value = `https://${value}`;
   }
+
   return value;
 }
 
-proxyForm.addEventListener('submit', (event) => {
-  event.preventDefault();
-  const rawUrl = proxyUrlInput.value;
-  const normalized = normalizeUrl(rawUrl);
-  if (!normalized) return;
+// ✅ VERCEL ROUTE
+proxyForm.addEventListener('submit', (e) => {
+  e.preventDefault();
 
-  const encoded = encodeURIComponent(normalized);
-  addFakeUsage(normalized);
+  const raw = proxyUrlInput.value;
+  const url = normalizeUrl(raw);
+  if (!url) return;
 
-  // Simulate real proxy routing in the interface.
-  window.location.href = `/proxy?url=${encoded}`;
+  const encoded = encodeURIComponent(url);
+
+  addFakeUsage(url);
+
+  // 🔥 THIS WORKS WITH VERCEL
+  window.location.href = `/api/proxy?url=${encoded}`;
 });
 
 resetButton.addEventListener('click', () => {
@@ -110,19 +116,22 @@ resetButton.addEventListener('click', () => {
   updateUI();
 });
 
-// Dragging behavior for the overlay control panel.
-overlayPanel.addEventListener('pointerdown', (event) => {
+// draggable overlay
+overlayPanel.addEventListener('pointerdown', (e) => {
   isDragging = true;
-  overlayPanel.setPointerCapture(event.pointerId);
+  overlayPanel.setPointerCapture(e.pointerId);
+
   const rect = overlayPanel.getBoundingClientRect();
-  dragOffset.x = event.clientX - rect.left;
-  dragOffset.y = event.clientY - rect.top;
+  dragOffset.x = e.clientX - rect.left;
+  dragOffset.y = e.clientY - rect.top;
 });
 
-overlayPanel.addEventListener('pointermove', (event) => {
+overlayPanel.addEventListener('pointermove', (e) => {
   if (!isDragging) return;
-  const x = event.clientX - dragOffset.x;
-  const y = event.clientY - dragOffset.y;
+
+  const x = e.clientX - dragOffset.x;
+  const y = e.clientY - dragOffset.y;
+
   overlayPanel.style.left = `${Math.max(12, Math.min(window.innerWidth - overlayPanel.offsetWidth - 12, x))}px`;
   overlayPanel.style.top = `${Math.max(12, Math.min(window.innerHeight - overlayPanel.offsetHeight - 12, y))}px`;
 });
@@ -135,10 +144,8 @@ overlayPanel.addEventListener('pointercancel', () => {
   isDragging = false;
 });
 
-// Keep the overlay panel visible after dragging starts.
 overlayPanel.style.position = 'fixed';
 
-// Initialize app state on load.
 loadStats();
 updateUI();
 updateUptime();
