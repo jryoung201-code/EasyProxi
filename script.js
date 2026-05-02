@@ -84,11 +84,14 @@ function addFakeUsage(url) {
 function normalizeUrl(raw) {
   let value = raw.trim();
   if (!value) return '';
-
-  if (!/^https?:\/\//i.test(value)) {
-    value = `https://${value}`;
+  
+  // If you dot > treat as search
+  if (!value.includes('.')) {
+    return `https://www.google.com/search?q=${encodeURIComponet(value)}`;
   }
-
+  if (!/^https?:\/\//i.test(value)) {
+    value = 'https://' + value
+  }
   return value;
 }
 
