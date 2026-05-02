@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EasyProxi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero-panel">
+      <div class="hero-brand">
+        <div class="logo-ring"></div>
+        <div>
+          <h1>EasyProxi</h1>
+          <p>Secure web proxy with a neon browser interface.</p>
+        </div>
+      </div>
+
+      <nav class="main-nav">
+        <a href="#proxy">Proxy</a>
+        <a href="#about">About</a>
+        <a href="#download">Download</a>
+      </nav>
+
+      <section class="proxy-card" id="proxy">
+        <div class="fake-browser">
+          <div class="browser-controls">
+            <button type="button" class="circle back" aria-label="Back"></button>
+            <button type="button" class="circle forward" aria-label="Forward"></button>
+            <button type="button" class="circle refresh" aria-label="Refresh"></button>
+          </div>
+          <div class="browser-url-bar">https://easyproxi.local</div>
+        </div>
+
+        <form id="proxyForm" class="proxy-form">
+          <label for="proxyUrl" class="sr-only">Enter URL</label>
+          <input id="proxyUrl" name="proxyUrl" type="url" placeholder="Enter URL (e.g. youtube.com)" autocomplete="off" required />
+          <button type="submit">Open in Proxy</button>
+        </form>
+        <p class="help-text">Your request will route through <span>/proxy?url=</span> with secure encoded forwarding.</p>
+      </section>
+    </header>
+
+    <main>
+      <section class="feature-grid section-glow">
+        <article class="feature-panel">
+          <h2>Proxy Routing</h2>
+          <p>Submit any URL and EasyProxi will route it through the secure proxy endpoint.</p>
+        </article>
+        <article class="feature-panel">
+          <h2>Frontend Simulation</h2>
+          <p>Track data usage, uptime, and requests served in a futuristic control overlay.</p>
+        </article>
+        <article class="feature-panel">
+          <h2>API Key Access</h2>
+          <p>Instantly generate a mock API key and keep it stored in your browser.</p>
+        </article>
+      </section>
+
+      <section class="about-section" id="about">
+        <div class="about-copy">
+          <h2>About EasyProxi</h2>
+          <p>EasyProxi is a polished browser-style proxy interface built with modern web design principles. It blends utility and atmosphere with a smart, responsive homepage experience.</p>
+          <ul>
+            <li>Dark mode neon visuals</li>
+            <li>Responsive desktop and mobile layout</li>
+            <li>Interactive, animated UI elements</li>
+          </ul>
+        </div>
+        <div class="about-visual">
+          <div class="visual-card">
+            <span>Neon control hub</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="download-section section-glow" id="download">
+        <div>
+          <h2>Browser Launcher</h2>
+          <p>Ready to launch your secure proxy journey with a sleek control layer.</p>
+          <button class="download-btn" type="button">Browser Launcher</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>EasyProxi &copy; 2026 · Secure proxy simulation interface</p>
+    </footer>
+
+    <div class="overlay-panel" id="overlayPanel">
+      <div class="overlay-header">
+        <span>Control Panel</span>
+        <span class="drag-hint">drag</span>
+      </div>
+      <div class="overlay-content">
+        <div class="stat-row"><span>Data Usage</span><strong id="dataUsage">0 MB / 500 MB</strong></div>
+        <div class="stat-row"><span>Requests Served</span><strong id="requestsServed">0</strong></div>
+        <div class="stat-row"><span>Uptime</span><strong id="uptime">00:00:00</strong></div>
+        <div class="stat-row"><span>API Key</span><strong id="apiKey">GENERATING...</strong></div>
+      </div>
+      <div class="overlay-footer">
+        <button type="button" id="resetButton">Reset Session</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
