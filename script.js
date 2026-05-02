@@ -1,96 +1,56 @@
-// Configuration constants
-const STORAGE_KEY = 'easyproxi-data';
-const API_KEY_KEY = 'easyproxi-api-key';
-const MAX_DATA_MB = 100;
-const UPTIME_START = Date.now();
-
-// Global state
-let stats = {
-  dataUsed: 0,
-  requests: 0,
-};
+const SERVER_URL = 'https://server.easyproxi.online';
+const MAX_DATA_MB = 500;
+const SERVER_START_OFFSET = { value: 0 };
+const PANEL_START = Date.now();
 
 let history = [];
 let historyIndex = -1;
 
-function loadStats() {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored) {
-    try {
-      const parsed = JSON.parse(stored);
-      stats = {
-        dataUsed: parsed.dataUsed || 0,
-        requests: parsed.requests || 0,
-      };
-    } catch {
-      stats = { dataUsed: 0, requests: 0 };
-    }
+// --- Stats: always pulled from server ---
+async function fetchStats() {
+  try {
+    const res = await fetch(`${SERVER_URL}/api/me`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
   }
 }
 
-function saveStats() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
-}
+async function updateUI() {
+  const data = await fetchStats();
+  if (!data) return;
 
-function getOrCreateApiKey() {
-  let key = localStorage.getItem(API_KEY_KEY);
-  if (!key) {
-    const rand = () => Math.random().toString(36).substring(2, 8).toUpperCase();
-    key = `EPX-${rand()}-${rand()}-${rand()}`;
-    localStorage.setItem(API_KEY_KEY, key);
-  }
-  return key;
-}
+  SERVER_START_OFFSET.value = data.uptimeSeconds;
 
-function formatDataUsage() {
-  return `${stats.dataUsed.toFixed(1)} MB / ${MAX_DATA_MB} MB`;
-}
-
-function updateUI() {
   const dataUsageEl = document.getElementById('dataUsage');
   const requestsServedEl = document.getElementById('requestsServed');
   const apiKeyEl = document.getElementById('apiKey');
-  
-  if (dataUsageEl) dataUsageEl.textContent = formatDataUsage();
-  if (requestsServedEl) requestsServedEl.textContent = stats.requests;
-  if (apiKeyEl) apiKeyEl.textContent = getOrCreateApiKey();
+
+  if (dataUsageEl) dataUsageEl.textContent = `${data.dataUsed.toFixed(2)} MB / ${MAX_DATA_MB} MB`;
+  if (requestsServedEl) requestsServedEl.textContent = data.requests;
+  if (apiKeyEl) apiKeyEl.textContent = data.apiKey;
 }
 
 function updateUptime() {
   const uptimeEl = document.getElementById('uptime');
   if (!uptimeEl) return;
-  
-  const elapsed = Date.now() - UPTIME_START;
-  const h = Math.floor(elapsed / 3600000);
-  const m = Math.floor((elapsed % 3600000) / 60000);
-  const s = Math.floor((elapsed % 60000) / 1000);
 
-  uptimeEl.textContent = [h, m, s]
-    .map(v => v.toString().padStart(2, '0'))
-    .join(':');
-}
-
-function addFakeUsage(url) {
-  const base = 3.2;
-  const extra = Math.min(8, url.length * 0.12);
-
-  stats.dataUsed = Math.min(MAX_DATA_MB, stats.dataUsed + base + extra);
-  stats.requests += 1;
-
-  saveStats();
-  updateUI();
+  const total = SERVER_START_OFFSET.value + Math.floor((Date.now() - PANEL_START) / 1000);
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  uptimeEl.textContent = [h, m, s].map(v => String(v).padStart(2, '0')).join(':');
 }
 
 function normalizeUrl(raw) {
   let value = raw.trim();
   if (!value) return '';
 
-  // If it looks like a search term (no dots or protocol), search Google
   if (!/\./.test(value) && !/^https?:\/\//i.test(value)) {
     return `https://www.google.com/search?q=${encodeURIComponent(value)}`;
   }
 
-  // Add https if no protocol
   if (!/^https?:\/\//.test(value)) {
     value = `https://${value}`;
   }
@@ -98,7 +58,92 @@ function normalizeUrl(raw) {
   return value;
 }
 
-// Initialize draggable overlay panel (works on all pages)
+// --- Inject overlay panel if not already on the page ---
+function injectOverlayPanel() {
+  if (document.getElementById('overlayPanel')) return;
+
+  const panel = document.createElement('div');
+  panel.className = 'overlay-panel';
+  panel.id = 'overlayPanel';
+  panel.innerHTML = `
+    <div class="overlay-header">
+      <span>Control Panel</span>
+      <span class="drag-hint">drag</span>
+    </div>
+    <div class="overlay-content">
+      <div class="stat-row"><span>Data Usage</span><strong id="dataUsage">-- MB / ${MAX_DATA_MB} MB</strong></div>
+      <div class="stat-row"><span>Requests Served</span><strong id="requestsServed">--</strong></div>
+      <div class="stat-row"><span>Uptime</span><strong id="uptime">00:00:00</strong></div>
+      <div class="stat-row"><span>API Key</span><strong id="apiKey">LOADING...</strong></div>
+    </div>
+    <div class="overlay-footer">
+      <button type="button" id="resetButton">Reset Session</button>
+    </div>
+  `;
+
+  // Inject styles if EasyProxi stylesheet isn't loaded (e.g. proxied pages)
+  if (!document.querySelector('link[href*="style.css"]')) {
+    const style = document.createElement('style');
+    style.textContent = `
+      #overlayPanel {
+        position: fixed !important;
+        top: 20px !important;
+        right: 20px !important;
+        width: min(340px, calc(100vw - 40px)) !important;
+        border-radius: 26px !important;
+        background: rgba(20, 25, 40, 0.95) !important;
+        border: 1px solid rgba(45, 196, 255, 0.18) !important;
+        box-shadow: 0 32px 80px rgba(19, 97, 200, 0.18) !important;
+        backdrop-filter: blur(24px) !important;
+        z-index: 2147483647 !important;
+        cursor: grab !important;
+        user-select: none !important;
+        font-family: 'Inter', system-ui, sans-serif !important;
+        color: #e7f2ff !important;
+      }
+      #overlayPanel:active { cursor: grabbing !important; }
+      #overlayPanel .overlay-header {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 18px 20px !important;
+        border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+        color: #d9f2ff !important;
+        font-weight: 600 !important;
+      }
+      #overlayPanel .drag-hint { font-size: 0.85rem !important; color: #94b5d5 !important; }
+      #overlayPanel .overlay-content { padding: 20px !important; }
+      #overlayPanel .stat-row {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 14px 0 !important;
+        border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+        font-size: 0.9rem !important;
+      }
+      #overlayPanel .stat-row:last-child { border-bottom: none !important; }
+      #overlayPanel .stat-row span { color: #94b5d5 !important; }
+      #overlayPanel .stat-row strong { color: #f5fbff !important; }
+      #overlayPanel .overlay-footer { padding: 16px 20px 20px !important; }
+      #resetButton {
+        width: 100% !important;
+        padding: 14px 18px !important;
+        border: none !important;
+        border-radius: 14px !important;
+        background: rgba(45, 196, 255, 0.15) !important;
+        color: #d7f3ff !important;
+        cursor: pointer !important;
+        font-size: 0.9rem !important;
+      }
+      #resetButton:hover { background: rgba(45, 196, 255, 0.26) !important; }
+    `;
+    document.head.appendChild(style);
+  }
+
+  document.body.appendChild(panel);
+}
+
+// --- Draggable overlay ---
 function initDraggableOverlay() {
   const panel = document.getElementById('overlayPanel');
   if (!panel) return;
@@ -107,9 +152,9 @@ function initDraggableOverlay() {
   let dragOffset = { x: 0, y: 0 };
 
   panel.addEventListener('pointerdown', (e) => {
+    if (e.target.id === 'resetButton') return;
     isDragging = true;
     panel.setPointerCapture(e.pointerId);
-
     const rect = panel.getBoundingClientRect();
     dragOffset.x = e.clientX - rect.left;
     dragOffset.y = e.clientY - rect.top;
@@ -117,27 +162,20 @@ function initDraggableOverlay() {
 
   panel.addEventListener('pointermove', (e) => {
     if (!isDragging) return;
-
-    const x = e.clientX - dragOffset.x;
-    const y = e.clientY - dragOffset.y;
-
-    panel.style.left = `${Math.max(12, Math.min(window.innerWidth - panel.offsetWidth - 12, x))}px`;
-    panel.style.top = `${Math.max(12, Math.min(window.innerHeight - panel.offsetHeight - 12, y))}px`;
+    panel.style.left = `${Math.max(12, Math.min(window.innerWidth - panel.offsetWidth - 12, e.clientX - dragOffset.x))}px`;
+    panel.style.top = `${Math.max(12, Math.min(window.innerHeight - panel.offsetHeight - 12, e.clientY - dragOffset.y))}px`;
+    panel.style.right = 'auto';
   });
 
-  panel.addEventListener('pointerup', () => {
-    isDragging = false;
-  });
-
-  panel.addEventListener('pointercancel', () => {
-    isDragging = false;
-  });
-
+  panel.addEventListener('pointerup', () => { isDragging = false; });
+  panel.addEventListener('pointercancel', () => { isDragging = false; });
   panel.style.position = 'fixed';
 }
 
-// Wait for DOM to load, then initialize based on page context
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  injectOverlayPanel();
+  initDraggableOverlay();
+
   // Browser UI page (browser.html)
   const urlForm = document.getElementById('urlForm');
   const urlInput = document.getElementById('urlInput');
@@ -150,26 +188,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const proxyForm = document.getElementById('proxyForm');
   const proxyUrlInput = document.getElementById('proxyUrl');
 
-  // Stats elements (on all pages with overlay)
-  const dataUsageEl = document.getElementById('dataUsage');
-  const requestsServedEl = document.getElementById('requestsServed');
-  const uptimeEl = document.getElementById('uptime');
-  const apiKeyEl = document.getElementById('apiKey');
   const resetButton = document.getElementById('resetButton');
 
-  // Initialize draggable overlay
-  initDraggableOverlay();
-
-  // Only setup browser page if we're on browser.html
+  // Browser page
   if (urlForm && urlInput && browserFrame) {
-    // Navigation buttons
     if (backBtn) {
       backBtn.addEventListener('click', () => {
         if (history.length > 0 && historyIndex > 0) {
           historyIndex--;
           const url = history[historyIndex];
           urlInput.value = url;
-          browserFrame.src = `/api/proxy?url=${encodeURIComponent(url)}`;
+          browserFrame.src = `${SERVER_URL}/api/proxy?url=${encodeURIComponent(url)}`;
         }
       });
     }
@@ -180,71 +209,66 @@ document.addEventListener('DOMContentLoaded', () => {
           historyIndex++;
           const url = history[historyIndex];
           urlInput.value = url;
-          browserFrame.src = `/api/proxy?url=${encodeURIComponent(url)}`;
+          browserFrame.src = `${SERVER_URL}/api/proxy?url=${encodeURIComponent(url)}`;
         }
       });
     }
 
     if (reloadBtn) {
       reloadBtn.addEventListener('click', () => {
-        if (browserFrame.src) {
-          browserFrame.src = browserFrame.src;
-        }
+        if (browserFrame.src) browserFrame.src = browserFrame.src;
       });
     }
 
-    // Form submission
-    urlForm.addEventListener('submit', (e) => {
+    urlForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const normalized = normalizeUrl(urlInput.value);
       if (!normalized) return;
 
       urlInput.value = normalized;
-      browserFrame.src = `/api/proxy?url=${encodeURIComponent(normalized)}`;
-      addFakeUsage(normalized);
+      browserFrame.src = `${SERVER_URL}/api/proxy?url=${encodeURIComponent(normalized)}`;
 
-      // Add to history
+      // Server tracks usage automatically when proxy is called
+      // Just sync UI after a short delay to let server update
+      setTimeout(updateUI, 1500);
+
       history = history.slice(0, historyIndex + 1);
       history.push(normalized);
       historyIndex = history.length - 1;
     });
   }
 
-  // Only setup landing page if we're on index.html
+  // Landing page
   if (proxyForm && proxyUrlInput) {
     proxyForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const url = normalizeUrl(proxyUrlInput.value);
       if (!url) return;
-
-      const encoded = encodeURIComponent(url);
-      addFakeUsage(url);
-      window.location.href = `/api/proxy?url=${encoded}`;
+      window.location.href = `${SERVER_URL}/api/proxy?url=${encodeURIComponent(url)}`;
     });
   }
 
-  // Reset button (on pages with overlay and stats)
-  if (resetButton && dataUsageEl) {
-    resetButton.addEventListener('click', () => {
-      stats = { dataUsed: 0, requests: 0 };
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem(API_KEY_KEY);
-      if (apiKeyEl) apiKeyEl.textContent = 'GENERATING...';
-      updateUI();
+  // Reset button — calls server to reset stats for this IP
+  if (resetButton) {
+    resetButton.addEventListener('click', async () => {
+      try {
+        await fetch(`${SERVER_URL}/api/reset`, { method: 'POST' });
+      } catch {}
+
       if (browserFrame) {
         browserFrame.src = '';
         urlInput.value = '';
         history = [];
         historyIndex = -1;
       }
+
+      await updateUI();
     });
   }
 
-  // Initialize stats and uptime (on pages with stats elements)
-  if (dataUsageEl && requestsServedEl && uptimeEl && apiKeyEl) {
-    loadStats();
-    updateUI();
-    updateUptime();
-    setInterval(updateUptime, 1000);
-  }
+  // Initial load + polling every 5 seconds
+  await updateUI();
+  updateUptime();
+  setInterval(updateUptime, 1000);
+  setInterval(updateUI, 5000);
 });
