@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register · EasyProxi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(8, 18, 35, 0.87);
+      border: 1px solid rgba(45, 196, 255, 0.18);
+      border-radius: 20px;
+      padding: 40px;
+    }
+
+    .auth-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+
+    .auth-logo h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      background: linear-gradient(135deg, #2dc4ff, #69d4ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .auth-card h2 {
+      margin: 0 0 8px;
+      font-size: 1.5rem;
+      color: #d9f2ff;
+      text-align: center;
+    }
+
+    .auth-card .auth-subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 32px;
+    }
+
+    .auth-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .auth-field label {
+      font-size: 0.9rem;
+      color: #abe9ff;
+      font-weight: 500;
+    }
+
+    .auth-field input {
+      padding: 12px 16px;
+      border: 1px solid rgba(45, 196, 255, 0.24);
+      border-radius: 12px;
+      background: rgba(8, 18, 35, 0.98);
+      color: #eef6ff;
+      font-size: 0.95rem;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.25s ease;
+      width: 100%;
+    }
+
+    .auth-field input:focus {
+      border-color: rgba(45, 196, 255, 0.65);
+      box-shadow: 0 0 0 3px rgba(45, 196, 255, 0.08);
+    }
+
+    .auth-field input::placeholder {
+      color: rgba(207, 229, 255, 0.4);
+    }
+
+    .auth-submit {
+      width: 100%;
+      padding: 14px;
+      margin-top: 8px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #2dc4ff, #3c80ff);
+      color: #061122;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .auth-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(45, 196, 255, 0.3);
+    }
+
+    .auth-divider {
+      text-align: center;
+      margin: 24px 0 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .auth-divider a {
+      color: #2dc4ff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .auth-divider a:hover {
+      text-decoration: underline;
+    }
+
+    .auth-error {
+      background: rgba(255, 80, 80, 0.12);
+      border: 1px solid rgba(255, 80, 80, 0.3);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: #ffaaaa;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+      text-align: center;
+      display: none;
+    }
+
+    .auth-error.visible {
+      display: block;
+    }
+
+    .auth-success {
+      background: rgba(45, 196, 100, 0.12);
+      border: 1px solid rgba(45, 196, 100, 0.3);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: #a0ffb8;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+      text-align: center;
+      display: none;
+    }
+
+    .auth-success.visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="logo-ring-small"></div>
+        <h1>EasyProxi</h1>
+      </div>
+
+      <h2>Create account</h2>
+      <p class="auth-subtitle">Sign up to start browsing securely</p>
+
+      <div class="auth-error" id="authError"></div>
+      <div class="auth-success" id="authSuccess"></div>
+
+      <form id="registerForm">
+        <div class="auth-field">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" placeholder="Choose a username" autocomplete="username" required />
+        </div>
+        <div class="auth-field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Choose a password" autocomplete="new-password" required />
+        </div>
+        <div class="auth-field">
+          <label for="confirm">Confirm Password</label>
+          <input type="password" id="confirm" name="confirm" placeholder="Repeat your password" autocomplete="new-password" required />
+        </div>
+        <button type="submit" class="auth-submit" id="submitBtn">Create Account</button>
+      </form>
+
+      <p class="auth-divider">
+        Already have an account? <a href="/login">Sign in</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const SERVER_URL = 'https://server.easyproxi.online';
+
+    const form = document.getElementById('registerForm');
+    const errorEl = document.getElementById('authError');
+    const successEl = document.getElementById('authSuccess');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function showError(msg) {
+      errorEl.textContent = msg;
+      errorEl.classList.add('visible');
+      successEl.classList.remove('visible');
+    }
+
+    function showSuccess(msg) {
+      successEl.textContent = msg;
+      successEl.classList.add('visible');
+      errorEl.classList.remove('visible');
+    }
+
+    function hideMessages() {
+      errorEl.classList.remove('visible');
+      successEl.classList.remove('visible');
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideMessages();
+
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirm').value;
+
+      if (!username || !password || !confirm) {
+        showError('Please fill in all fields.');
+        return;
+      }
+
+      if (password !== confirm) {
+        showError('Passwords do not match.');
+        return;
+      }
+
+      if (password.length < 6) {
+        showError('Password must be at least 6 characters.');
+        return;
+      }
+
+      submitBtn.textContent = 'Creating account...';
+      submitBtn.disabled = true;
+
+      try {
+        const res = await fetch(`${SERVER_URL}/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ username, password }),
+        });
+
+        if (res.ok || res.redirected) {
+          showSuccess('Account created! Redirecting...');
+          setTimeout(() => window.location.href = '/browser', 1200);
+        } else {
+          const text = await res.text();
+          showError(text || 'Could not create account.');
+        }
+      } catch {
+        showError('Could not connect to server. Please try again.');
+      } finally {
+        submitBtn.textContent = 'Create Account';
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
