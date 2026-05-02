@@ -3,108 +3,106 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EasyProxi</title>
+  <title>EasyProxi | Secure Web Proxy</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="app-shell">
-    <header class="hero-panel">
-      <div class="hero-brand">
-        <div class="logo-ring"></div>
-        <div>
+  <div class="main-page">
+    <header class="main-header">
+      <div class="header-content">
+        <div class="logo-section">
+          <div class="logo-ring-small"></div>
           <h1>EasyProxi</h1>
-          <p>Secure web proxy with a neon browser interface.</p>
         </div>
+        <nav class="header-nav">
+          <a href="#features">Features</a>
+          <a href="#about">About</a>
+          <a href="/download" class="download-link">Download</a>
+        </nav>
       </div>
-
-      <nav class="main-nav">
-        <a href="#proxy">Proxy</a>
-        <a href="#about">About</a>
-        <a href="/download">Download</a>
-      </nav>
-
-      <section class="proxy-card" id="proxy">
-        <div class="fake-browser">
-          <div class="browser-controls">
-            <button type="button" class="circle back" aria-label="Back"></button>
-            <button type="button" class="circle forward" aria-label="Forward"></button>
-            <button type="button" class="circle refresh" aria-label="Refresh"></button>
-          </div>
-          <div class="browser-url-bar">https://easyproxi.local</div>
-        </div>
-
-        <form id="proxyForm" class="proxy-form">
-          <label for="proxyUrl" class="sr-only">Enter URL</label>
-          <input id="proxyUrl" name="proxyUrl" type="url" placeholder="Enter URL (e.g. youtube.com)" autocomplete="off" required />
-          <button type="submit">Open in Proxy</button>
-        </form>
-        <p class="help-text">Your request will route through <span>/proxy?url=</span> with secure encoded forwarding.</p>
-      </section>
     </header>
 
-    <main>
-      <section class="feature-grid section-glow">
-        <article class="feature-panel">
-          <h2>Proxy Routing</h2>
-          <p>Submit any URL and EasyProxi will route it through the secure proxy endpoint.</p>
-        </article>
-        <article class="feature-panel">
-          <h2>Frontend Simulation</h2>
-          <p>Track data usage, uptime, and requests served in a futuristic control overlay.</p>
-        </article>
-        <article class="feature-panel">
-          <h2>API Key Access</h2>
-          <p>Instantly generate a mock API key and keep it stored in your browser.</p>
-        </article>
-      </section>
+    <section class="hero">
+      <div class="hero-content">
+        <h2>Secure Web Proxy with Neon UI</h2>
+        <p>Browse safely, track usage, and manage your traffic with a beautiful control panel</p>
+        <a href="#try-it" class="cta-btn">Try It Now</a>
+      </div>
+    </section>
 
-      <section class="about-section" id="about">
-        <div class="about-copy">
+    <section class="try-proxy" id="try-it">
+      <div class="proxy-input-card">
+        <h3>Try the Proxy</h3>
+        <form id="proxyForm" class="proxy-form">
+          <input id="proxyUrl" name="proxyUrl" type="text" placeholder="Enter URL (e.g. youtube.com)" autocomplete="off" required />
+          <button type="submit" class="proxy-submit-btn">Go</button>
+        </form>
+        <p class="proxy-hint">Enter any URL to browse through the secure proxy</p>
+      </div>
+    </section>
+
+    <section class="features" id="features">
+      <h2>Why Choose EasyProxi?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3>Secure Routing</h3>
+          <p>All requests route through secure proxy endpoints with encoded forwarding</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Usage Tracking</h3>
+          <p>Monitor data usage, requests served, and uptime in real-time</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔑</div>
+          <h3>API Keys</h3>
+          <p>Generate and manage API keys for programmatic access</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="about" id="about">
+      <div class="about-container">
+        <div class="about-text">
           <h2>About EasyProxi</h2>
-          <p>EasyProxi is a polished browser-style proxy interface built with modern web design principles. It blends utility and atmosphere with a smart, responsive homepage experience.</p>
-          <ul>
-            <li>Dark mode neon visuals</li>
-            <li>Responsive desktop and mobile layout</li>
-            <li>Interactive, animated UI elements</li>
+          <p>EasyProxi combines powerful proxy functionality with a sleek neon-themed interface. Built for security and usability, it provides a complete solution for web browsing with built-in analytics and control.</p>
+          <ul class="about-list">
+            <li>✓ Dark mode neon visuals</li>
+            <li>✓ Responsive desktop and mobile design</li>
+            <li>✓ Real-time usage tracking</li>
+            <li>✓ Beautiful control overlay</li>
           </ul>
         </div>
-        <div class="about-visual">
-          <div class="visual-card">
-            <span>Neon control hub</span>
-          </div>
-        </div>
-      </section>
+      </div>
+    </section>
 
-      <section class="download-section section-glow" id="download">
-        <div>
-          <h2>Browser Launcher</h2>
-          <p>Ready to launch your secure proxy journey with a sleek control layer.</p>
-          <a href="/download" class="download-btn">Browser Launcher</a>
-        </div>
-      </section>
-    </main>
+    <section class="cta-section">
+      <h2>Ready to Get Started?</h2>
+      <p>Download EasyProxi Browser and manage your web traffic with style</p>
+      <a href="/download" class="cta-download-btn">Download Now</a>
+    </section>
 
-    <footer class="app-footer">
-      <p>EasyProxi &copy; 2026 · Secure proxy simulation interface</p>
+    <footer class="main-footer">
+      <p>EasyProxi &copy; 2026 · Secure web proxy with neon interface</p>
     </footer>
 
-    <div class="overlay-panel" id="overlayPanel">
-      <div class="overlay-header">
-        <span>Control Panel</span>
-        <span class="drag-hint">drag</span>
-      </div>
-      <div class="overlay-content">
-        <div class="stat-row"><span>Data Usage</span><strong id="dataUsage">0 MB / 500 MB</strong></div>
-        <div class="stat-row"><span>Requests Served</span><strong id="requestsServed">0</strong></div>
-        <div class="stat-row"><span>Uptime</span><strong id="uptime">00:00:00</strong></div>
-        <div class="stat-row"><span>API Key</span><strong id="apiKey">GENERATING...</strong></div>
-      </div>
-      <div class="overlay-footer">
-        <button type="button" id="resetButton">Reset Session</button>
-      </div>
+  <div class="overlay-panel" id="overlayPanel">
+    <div class="overlay-header">
+      <span>Control Panel</span>
+      <span class="drag-hint">drag</span>
+    </div>
+    <div class="overlay-content">
+      <div class="stat-row"><span>Data Usage</span><strong id="dataUsage">0 MB / 500 MB</strong></div>
+      <div class="stat-row"><span>Requests Served</span><strong id="requestsServed">0</strong></div>
+      <div class="stat-row"><span>Uptime</span><strong id="uptime">00:00:00</strong></div>
+      <div class="stat-row"><span>API Key</span><strong id="apiKey">GENERATING...</strong></div>
+    </div>
+    <div class="overlay-footer">
+      <button type="button" id="resetButton">Reset Session</button>
     </div>
   </div>
 

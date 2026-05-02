@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Download EasyProxi for Linux</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="platform-download">
+    <div class="download-header">
+      <a href="/" class="back-link">← Back</a>
+      <h1>Download for Linux</h1>
+      <p>EasyProxi Browser for Ubuntu, Debian, and Fedora</p>
+    </div>
+
+    <div class="download-content">
+      <div class="system-info">
+        <div class="info-card">
+          <h3>System Requirements</h3>
+          <ul>
+            <li>Ubuntu 18.04 LTS or later</li>
+            <li>Debian 10 or later</li>
+            <li>Fedora 32 or later</li>
+            <li>Minimum 120 MB free disk space</li>
+          </ul>
+        </div>
+
+        <div class="info-card">
+          <h3>Installation Instructions</h3>
+          <ol>
+            <li>Download the AppImage or .deb</li>
+            <li>For AppImage: chmod +x EasyProxi.AppImage</li>
+            <li>For .deb: sudo apt install ./easyproxi.deb</li>
+            <li>Launch from application menu</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="download-buttons">
+        <button class="download-btn primary" data-version="latest">
+          <span class="btn-label">Download AppImage (v1.0.0)</span>
+          <span class="btn-size">48.5 MB · Universal</span>
+        </button>
+        <button class="download-btn">
+          <span class="btn-label">Download .deb Package</span>
+          <span class="btn-size">For Debian/Ubuntu</span>
+        </button>
+        <button class="download-btn">
+          <span class="btn-label">Download .rpm Package</span>
+          <span class="btn-size">For Fedora/RHEL</span>
+        </button>
+      </div>
+
+      <div class="features-list">
+        <h3>Linux Edition Features</h3>
+        <ul>
+          <li>✓ AppImage for all distributions</li>
+          <li>✓ Native GTK integration</li>
+          <li>✓ Full neon UI with proxy functionality</li>
+          <li>✓ Command-line interface support</li>
+          <li>✓ Open source development tools compatible</li>
+        </ul>
+      </div>
+    </div>
+
+    <footer class="download-footer">
+      <p>Need help? <a href=\"mailto:support@easyproxi.local\">Contact Support</a></p>
+      <p>EasyProxi &copy; 2026 · Secure proxy with neon interface</p>
+    </footer>
+  </div>
+
+  <div class="overlay-panel" id="overlayPanel">
+    <div class="overlay-header">
+      <span>Control Panel</span>
+      <span class="drag-hint">drag</span>
+    </div>
+    <div class="overlay-content">
+      <div class="stat-row"><span>Data Usage</span><strong id="dataUsage">0 MB / 500 MB</strong></div>
+      <div class="stat-row"><span>Requests Served</span><strong id="requestsServed">0</strong></div>
+      <div class="stat-row"><span>Uptime</span><strong id="uptime">00:00:00</strong></div>
+      <div class="stat-row"><span>API Key</span><strong id="apiKey">GENERATING...</strong></div>
+    </div>
+    <div class="overlay-footer">
+      <button type="button" id="resetButton">Reset Session</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    document.querySelectorAll('.download-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        let format = 'AppImage';
+        if (!btn.classList.contains('primary')) {
+          const text = btn.querySelector('.btn-label').textContent;
+          if (text.includes('.rpm')) format = '.rpm';
+          else if (text.includes('.deb')) format = '.deb';
+        }
+        alert('Download starting...\n\nIn production, this would download the Linux installer.\n\nFormat: ' + format);
+      });
+    });
+  </script>
+</body>
+</html>

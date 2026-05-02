@@ -64,14 +64,5 @@
   </div>
 
   <script src="script.js"></script>
-    const platformButtons = document.querySelectorAll('.platform-btn');
-
-    platformButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const platform = btn.dataset.platform;
-        alert(`Downloading EasyProxi Browser for ${platform.charAt(0).toUpperCase() + platform.slice(1)}...\n\nNote: This is a simulation. In a real app, this would download the executable file.`);
-      });
-    });
-  </script>
 </body>
 </html>
