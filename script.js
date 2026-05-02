@@ -9,7 +9,7 @@ const overlayPanel = document.getElementById('overlayPanel');
 
 const STORAGE_KEY = 'easyproxi-data';
 const API_KEY_KEY = 'easyproxi-api-key';
-const MAX_DATA_MB = 500;
+const MAX_DATA_MB = 50;
 const UPTIME_START = Date.now();
 
 let dragOffset = { x: 0, y: 0 };
@@ -105,7 +105,7 @@ proxyForm.addEventListener('submit', (e) => {
   addFakeUsage(url);
 
   // 🔥 THIS WORKS WITH VERCEL
-  window.location.href = "/api/proxy?url="${encoded};
+  window.location.href = `/api/proxy?url=${encoded}`;
 });
 
 resetButton.addEventListener('click', () => {
