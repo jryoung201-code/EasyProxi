@@ -1,15 +1,15 @@
 const SERVER_URL = 'https://server.easyproxi.online';
-const MAX_DATA_MB = 500;
 const SERVER_START_OFFSET = { value: 0 };
 const PANEL_START = Date.now();
 
 let history = [];
 let historyIndex = -1;
 
-// --- Stats: always pulled from server ---
+// --- Stats: always pulled from server by session ---
 async function fetchStats() {
   try {
-    const res = await fetch(`${SERVER_URL}/api/me`);
+    const res = await fetch(`${SERVER_URL}/api/me`, { credentials: 'include' });
+    if (res.status === 401 || res.redirected) return null; // not logged in
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -19,17 +19,25 @@ async function fetchStats() {
 
 async function updateUI() {
   const data = await fetchStats();
-  if (!data) return;
-
-  SERVER_START_OFFSET.value = data.uptimeSeconds;
 
   const dataUsageEl = document.getElementById('dataUsage');
   const requestsServedEl = document.getElementById('requestsServed');
   const apiKeyEl = document.getElementById('apiKey');
 
-  if (dataUsageEl) dataUsageEl.textContent = `${data.dataUsed.toFixed(2)} MB / ${MAX_DATA_MB} MB`;
+  if (!data) {
+    // Not logged in — show placeholder
+    if (dataUsageEl) dataUsageEl.textContent = 'Not logged in';
+    if (requestsServedEl) requestsServedEl.textContent = '--';
+    if (apiKeyEl) apiKeyEl.textContent = '--';
+    return;
+  }
+
+  SERVER_START_OFFSET.value = data.uptimeSeconds;
+
+  const limit = data.dataLimit || 500;
+  if (dataUsageEl) dataUsageEl.textContent = `${data.dataUsed.toFixed(2)} MB / ${limit} MB`;
   if (requestsServedEl) requestsServedEl.textContent = data.requests;
-  if (apiKeyEl) apiKeyEl.textContent = data.apiKey;
+  if (apiKeyEl) apiKeyEl.textContent = data.username || '--';
 }
 
 function updateUptime() {
@@ -71,17 +79,17 @@ function injectOverlayPanel() {
       <span class="drag-hint">drag</span>
     </div>
     <div class="overlay-content">
-      <div class="stat-row"><span>Data Usage</span><strong id="dataUsage">-- MB / ${MAX_DATA_MB} MB</strong></div>
+      <div class="stat-row"><span>Data Usage</span><strong id="dataUsage">Loading...</strong></div>
       <div class="stat-row"><span>Requests Served</span><strong id="requestsServed">--</strong></div>
       <div class="stat-row"><span>Uptime</span><strong id="uptime">00:00:00</strong></div>
-      <div class="stat-row"><span>API Key</span><strong id="apiKey">LOADING...</strong></div>
+      <div class="stat-row"><span>Account</span><strong id="apiKey">Loading...</strong></div>
     </div>
     <div class="overlay-footer">
       <button type="button" id="resetButton">Reset Session</button>
     </div>
   `;
 
-  // Inject styles if EasyProxi stylesheet isn't loaded (e.g. proxied pages)
+  // Inject styles if EasyProxi stylesheet isn't loaded
   if (!document.querySelector('link[href*="style.css"]')) {
     const style = document.createElement('style');
     style.textContent = `
@@ -228,8 +236,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       urlInput.value = normalized;
       browserFrame.src = `${SERVER_URL}/api/proxy?url=${encodeURIComponent(normalized)}`;
 
-      // Server tracks usage automatically when proxy is called
-      // Just sync UI after a short delay to let server update
+      // Sync UI after short delay to let server track usage
       setTimeout(updateUI, 1500);
 
       history = history.slice(0, historyIndex + 1);
@@ -248,16 +255,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Reset button — calls server to reset stats for this IP
+  // Reset button — calls server to reset stats for logged in user
   if (resetButton) {
     resetButton.addEventListener('click', async () => {
       try {
-        await fetch(`${SERVER_URL}/api/reset`, { method: 'POST' });
+        await fetch(`${SERVER_URL}/api/reset`, {
+          method: 'POST',
+          credentials: 'include',
+        });
       } catch {}
 
       if (browserFrame) {
         browserFrame.src = '';
-        urlInput.value = '';
+        if (urlInput) urlInput.value = '';
         history = [];
         historyIndex = -1;
       }
@@ -266,7 +276,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Initial load + polling every 5 seconds
+  // Initial load + poll every 5 seconds
   await updateUI();
   updateUptime();
   setInterval(updateUptime, 1000);
