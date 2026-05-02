@@ -10,43 +10,74 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="app-shell">
-    <header class="hero-panel">
-      <div class="hero-brand">
-        <div class="logo-ring"></div>
-        <div>
-          <h1>Support EasyProxi</h1>
-          <p>Help us reach our goal of $3,000</p>
-        </div>
-      </div>
+  <div class="main-page">
 
-      <nav class="main-nav">
-        <a href="/">Home</a>
-        <a href="/download">Download</a>
-      </nav>
+    <header class="main-header">
+      <div class="header-content">
+        <div class="logo-section">
+          <div class="logo-ring-small"></div>
+          <h1>EasyProxi</h1>
+        </div>
+        <nav class="header-nav">
+          <a href="/">Home</a>
+          <a href="/download">Download</a>
+          <a href="/donate" class="download-link">Donate</a>
+        </nav>
+      </div>
     </header>
 
-    <main>
-      <section class="donation-section section-glow">
-        <h2>Choose Your Donation Amount</h2>
-        <div class="donation-buttons">
-          <a href="https://cash.app/pay/link/pydcrn5c" class="donate-btn">$1</a>
-          <a href="https://cash.app/pay/link/iccstw9g" class="donate-btn">$5</a>
-          <a href="https://cash.app/pay/link/nefxfn8v" class="donate-btn">$10</a>
-          <a href="https://cash.app/pay/link/bee3c31v" class="donate-btn">$20</a>
-          <a href="https://cash.app/pay/link/2ylx4jvu" class="donate-btn">$50</a>
-          <a href="https://cash.app/pay/link/j8mwn8yn" class="donate-btn">$100</a>
-          <a href="https://cash.app/pay/link/yw4hyreg" class="donate-btn">$200</a>
-          <a href="https://cash.app/pay/link/u4if71dp" class="donate-btn">$500</a>
-        </div>
-        <p>Your support helps us maintain and improve EasyProxi. Thank you!</p>
-      </section>
-    </main>
+    <section class="hero">
+      <div class="hero-content">
+        <h2>Support EasyProxi</h2>
+        <p>Help us reach our goal of $3,000 to keep the servers running and improve the platform</p>
+      </div>
+    </section>
 
-    <footer class="app-footer">
-      <p>EasyProxi &copy; 2026 · Secure proxy simulation interface</p>
+    <section class="donation-section">
+      <h2>Choose Your Donation Amount</h2>
+      <p style="color: var(--text-muted); margin-bottom: 8px;">Every contribution helps — thank you for your support 💙</p>
+
+      <div class="donation-buttons">
+        <a href="https://cash.app/pay/link/pydcrn5c" class="donate-btn" target="_blank" rel="noopener">$1</a>
+        <a href="https://cash.app/pay/link/iccstw9g" class="donate-btn" target="_blank" rel="noopener">$5</a>
+        <a href="https://cash.app/pay/link/nefxfn8v" class="donate-btn" target="_blank" rel="noopener">$10</a>
+        <a href="https://cash.app/pay/link/bee3c31v" class="donate-btn" target="_blank" rel="noopener">$20</a>
+        <a href="https://cash.app/pay/link/2ylx4jvu" class="donate-btn" target="_blank" rel="noopener">$50</a>
+        <a href="https://cash.app/pay/link/j8mwn8yn" class="donate-btn" target="_blank" rel="noopener">$100</a>
+        <a href="https://cash.app/pay/link/yw4hyreg" class="donate-btn" target="_blank" rel="noopener">$200</a>
+        <a href="https://cash.app/pay/link/u4if71dp" class="donate-btn" target="_blank" rel="noopener">$500</a>
+      </div>
+
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Payments processed securely via Cash App</p>
+    </section>
+
+    <section class="features" id="why">
+      <h2>Why Donate?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🖥️</div>
+          <h3>Server Costs</h3>
+          <p>Keep the proxy servers running fast and reliably for everyone</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>New Features</h3>
+          <p>Fund development of new features like better link handling, more speed, and mobile support</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔓</div>
+          <h3>Stay Free</h3>
+          <p>Your donations help us keep EasyProxi free for everyone without paywalls</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="main-footer">
+      <p>EasyProxi &copy; 2026 · Secure web proxy with neon interface</p>
     </footer>
+
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>
