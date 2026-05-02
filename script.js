@@ -3,7 +3,7 @@ const STORAGE_KEY = 'easyproxi-data';
 const API_KEY_KEY = 'easyproxi-api-key';
 const MAX_DATA_MB = 100;
 const UPTIME_START = Date.now();
-const SERVER_URL = 'https://easyproxi-server.onrender.com';
+const SERVER_URL = 'https://server.easyproxi.online';
 
 // Global state
 let stats = {
