@@ -9,7 +9,7 @@ let historyIndex = -1;
 async function fetchStats() {
   try {
     const res = await fetch(`${SERVER_URL}/api/me`, { credentials: 'include' });
-    if (res.status === 401 || res.redirected) return null; // not logged in
+    if (res.status === 401 || res.redirected) return null;
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -23,21 +23,33 @@ async function updateUI() {
   const dataUsageEl = document.getElementById('dataUsage');
   const requestsServedEl = document.getElementById('requestsServed');
   const apiKeyEl = document.getElementById('apiKey');
+  const authNavBtn = document.getElementById('authNavBtn');
 
   if (!data) {
-    // Not logged in — show placeholder
+    // Not logged in
     if (dataUsageEl) dataUsageEl.textContent = 'Not logged in';
     if (requestsServedEl) requestsServedEl.textContent = '--';
     if (apiKeyEl) apiKeyEl.textContent = '--';
+    if (authNavBtn) {
+      authNavBtn.textContent = 'Login';
+      authNavBtn.href = '/login';
+    }
     return;
   }
 
+  // Logged in
   SERVER_START_OFFSET.value = data.uptimeSeconds;
-
   const limit = data.dataLimit || 500;
+
   if (dataUsageEl) dataUsageEl.textContent = `${data.dataUsed.toFixed(2)} MB / ${limit} MB`;
   if (requestsServedEl) requestsServedEl.textContent = data.requests;
   if (apiKeyEl) apiKeyEl.textContent = data.username || '--';
+
+  // Change nav button to show username + link to console
+  if (authNavBtn) {
+    authNavBtn.textContent = data.username;
+    authNavBtn.href = `${SERVER_URL}/console`;
+  }
 }
 
 function updateUptime() {
@@ -89,7 +101,6 @@ function injectOverlayPanel() {
     </div>
   `;
 
-  // Inject styles if EasyProxi stylesheet isn't loaded
   if (!document.querySelector('link[href*="style.css"]')) {
     const style = document.createElement('style');
     style.textContent = `
@@ -235,8 +246,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       urlInput.value = normalized;
       browserFrame.src = `${SERVER_URL}/api/proxy?url=${encodeURIComponent(normalized)}`;
-
-      // Sync UI after short delay to let server track usage
       setTimeout(updateUI, 1500);
 
       history = history.slice(0, historyIndex + 1);
@@ -245,17 +254,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Landing page
+  // Landing page — redirect to login if not logged in
   if (proxyForm && proxyUrlInput) {
-    proxyForm.addEventListener('submit', (e) => {
+    proxyForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const url = normalizeUrl(proxyUrlInput.value);
       if (!url) return;
+
+      // Check if logged in before proxying
+      const data = await fetchStats();
+      if (!data) {
+        window.location.href = '/login';
+        return;
+      }
+
       window.location.href = `${SERVER_URL}/api/proxy?url=${encodeURIComponent(url)}`;
     });
   }
 
-  // Reset button — calls server to reset stats for logged in user
+  // Reset button
   if (resetButton) {
     resetButton.addEventListener('click', async () => {
       try {

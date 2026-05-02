@@ -20,8 +20,9 @@
         <nav class="header-nav">
           <a href="#features">Features</a>
           <a href="#about">About</a>
-          <a href="/download" class="download-link">Download</a>
           <a href="/donate">Donate</a>
+          <a href="/download">Download</a>
+          <a href="/login" class="download-link" id="authNavBtn">Login</a>
         </nav>
       </div>
     </header>
@@ -94,16 +95,18 @@
       <p>EasyProxi &copy; 2026 · Secure web proxy with neon interface</p>
     </footer>
 
+  </div>
+
   <div class="overlay-panel" id="overlayPanel">
     <div class="overlay-header">
       <span>Control Panel</span>
       <span class="drag-hint">drag</span>
     </div>
     <div class="overlay-content">
-      <div class="stat-row"><span>Data Usage</span><strong id="dataUsage">0 MB / 500 MB</strong></div>
-      <div class="stat-row"><span>Requests Served</span><strong id="requestsServed">0</strong></div>
+      <div class="stat-row"><span>Data Usage</span><strong id="dataUsage">Loading...</strong></div>
+      <div class="stat-row"><span>Requests Served</span><strong id="requestsServed">--</strong></div>
       <div class="stat-row"><span>Uptime</span><strong id="uptime">00:00:00</strong></div>
-      <div class="stat-row"><span>API Key</span><strong id="apiKey">GENERATING...</strong></div>
+      <div class="stat-row"><span>Account</span><strong id="apiKey">Loading...</strong></div>
     </div>
     <div class="overlay-footer">
       <button type="button" id="resetButton">Reset Session</button>
