@@ -6,10 +6,18 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch(url);
-    const text = await response.text();
-    res.status(200).send(text);
+    const response = await fetch(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0",
+      },
+    });
+
+    const contentType = response.headers.get("content-type") || "text/html";
+    const data = await response.text();
+
+    res.setHeader("Content-Type", contentType);
+    res.status(200).send(data);
   } catch (err) {
-    res.status(500).send("Proxy error");
+    res.status(500).send("Proxy error: " + err.message);
   }
 }
