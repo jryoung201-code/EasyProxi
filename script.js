@@ -105,7 +105,7 @@ proxyForm.addEventListener('submit', (e) => {
   addFakeUsage(url);
 
   // 🔥 THIS WORKS WITH VERCEL
-  window.location.href = `/api/proxy?url=${encoded}`;
+  window.location.href = "/api/proxy?url="${encoded};
 });
 
 resetButton.addEventListener('click', () => {
