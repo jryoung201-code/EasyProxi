@@ -5,6 +5,10 @@
       "destination": "/download.html"
     },
     {
+      "source": "/donate",
+      "destination": "/donate.html"
+    },
+    {
       "source": "/browser",
       "destination": "/index.html"
     },
