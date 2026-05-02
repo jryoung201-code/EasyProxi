@@ -13,7 +13,7 @@ const overlayPanel = document.getElementById('overlayPanel');
 
 const STORAGE_KEY = 'easyproxi-data';
 const API_KEY_KEY = 'easyproxi-api-key';
-const MAX_DATA_MB = 500;
+const MAX_DATA_MB = 50;
 const UPTIME_START = Date.now();
 
 let dragOffset = { x: 0, y: 0 };
@@ -91,6 +91,7 @@ function addFakeUsage(url) {
 function normalizeUrl(raw) {
   let value = raw.trim();
   if (!value) return '';
+<<<<<<< HEAD
 
   // If it looks like a search term (no dots or protocol), search Google
   if (!/\./.test(value) && !/^https?:\/\//i.test(value)) {
@@ -100,8 +101,16 @@ function normalizeUrl(raw) {
   // Add https if no protocol
   if (!/^https?:\/\//i.test(value)) {
     value = `https://${value}`;
+=======
+  
+  // If you dot > treat as search
+  if (!value.includes('.')) {
+    return `https://www.google.com/search?q=${encodeURIComponet(value)}`;
   }
-
+  if (!/^https?:\/\//i.test(value)) {
+    value = 'https://' + value
+>>>>>>> 45331902f1c1ef5b035f94ecf1c44c40c0e60d91
+  }
   return value;
 }
 
